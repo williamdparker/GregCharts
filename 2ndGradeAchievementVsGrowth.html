@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>2nd Grade Achievement vs Growth</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datasource"></script>
+</head>
+<style>
+   .background {
+       background: #555555;
+   }
+</style>
+<body>
+<div>
+    <canvas id="myChart"></canvas>
+</div>
+</body>
+<script>
+
+    const config = {
+        type: 'scatter',
+        data: {
+            <!--
+                    labels:["Students"],
+                    datasets: [{
+                        pointBackgroundColor: 'black',
+                        borderColor: 'black',
+                        backgroundColor: 'black',
+                    }],
+        -->
+        },
+        plugins: [ChartDataSource],
+        options: {
+            title: {
+                display: true,
+                text: 'The Woods School - Second Grade Growth and Achievement'
+            },
+            chartArea: {
+                backgroundColorUpperLeft: 'Lavender',
+                backgroundColorLowerLeft: 'Pink',
+                backgroundColorUpperRight: 'PaleGreen',
+                backgroundColorLowerRight: 'Gold',
+            },
+            plugins: {
+                legend: {
+                    display: false
+                },
+                datasource: {
+                    type: 'csv',
+                    url: '2ndGradeGrowthVsAchievement.csv',
+                    delimiter: ',',
+                    rowMapping: 'datapoint',
+                    datasetLabels: true,
+                    indexLabels: true,
+                    datapointLabelMapping: {
+                        _dataset: 'ClassName',
+                        _index: 'EndPercentile',
+                        x: 'EndPercentile',
+                        y: 'ConditionalGrowthPercentile',
+                    },
+                }
+            },
+            scales: {
+                xAxes: [
+                    {
+                        display: true,
+                        scaleLabel: { display: true, labelString: 'Achievement Percentile'}
+                    }
+                ],
+                yAxes: [
+                    {
+                        display: true,
+                        scaleLabel: { display: true, labelString: 'Conditional Growth Percentile'}
+                    }
+                ]
+            }
+        }
+    };
+
+    window.onload = function() {
+        const ctx = document.getElementById('myChart').getContext('2d');
+        Chart.scaleService.updateScaleDefaults('linear',
+            {
+            ticks: {
+                min: 0,
+                max: 100
+            }
+        });
+        Chart.defaults.global.legend.display = false;
+        Chart.pluginService.register({
+            beforeDraw: function (chart, easing) {
+                if (chart.config.options.chartArea && chart.config.options.chartArea.backgroundColorLowerLeft) {
+                    const helpers = Chart.helpers;
+                    const ctx = chart.chart.ctx;
+                    const chartArea = chart.chartArea;
+
+                    ctx.save();
+                    // Lower left
+                    ctx.fillStyle = chart.config.options.chartArea.backgroundColorLowerLeft;
+                    ctx.fillRect(chartArea.left, chartArea.top + 0.5*(chartArea.bottom - chartArea.top),
+                        0.5*(chartArea.right - chartArea.left), 0.5*(chartArea.bottom - chartArea.top));
+                    // Upper left
+                    ctx.fillStyle = chart.config.options.chartArea.backgroundColorUpperLeft;
+                    ctx.fillRect(chartArea.left, chartArea.top,
+                        0.5*(chartArea.right - chartArea.left), 0.5*(chartArea.bottom - chartArea.top));
+                    // Upper right
+                    ctx.fillStyle = chart.config.options.chartArea.backgroundColorUpperRight;
+                    ctx.fillRect(chartArea.left + 0.5*(chartArea.right - chartArea.left), chartArea.top,
+                        0.5*(chartArea.right - chartArea.left), 0.5*(chartArea.bottom - chartArea.top));
+                    // Lower right
+                    ctx.fillStyle = chart.config.options.chartArea.backgroundColorLowerRight;
+                    ctx.fillRect(chartArea.left + 0.5*(chartArea.right - chartArea.left), chartArea.top + 0.5*(chartArea.bottom - chartArea.top),
+                        0.5*(chartArea.right - chartArea.left), 0.5*(chartArea.bottom - chartArea.top));
+                    ctx.restore();
+                }
+            }
+        });
+
+        window.myChart = new Chart(ctx, config);
+    };
+</script>
