@@ -21,31 +21,36 @@
     const config = {
         type: 'scatter',
         data: {
-            <!--
-                    labels:["Students"],
+                    // labels:["Boys", "Girls"],
                     datasets: [{
-                        pointBackgroundColor: 'black',
-                        borderColor: 'black',
-                        backgroundColor: 'black',
+                            label: "Girls",
+                            pointBackgroundColor: 'red',
+                            borderColor: 'red',
+                            backgroundColor: 'red',
+                            pointStyle: 'rectRot'
+                    },
+                        {
+                            label: "Boys",
+                            pointBackgroundColor: 'blue',
+                            borderColor: 'blue',
+                            backgroundColor:  'blue',
+                            pointStyle: ''
                     }],
-        -->
         },
         plugins: [ChartDataSource],
         options: {
             title: {
                 display: true,
-                text: 'The Woods School - Second Grade Growth and Achievement'
+                text: 'Second Grade Growth vs. Achievement',
+                fontSize: 18
             },
             chartArea: {
                 backgroundColorUpperLeft: 'Lavender',
                 backgroundColorLowerLeft: 'Pink',
                 backgroundColorUpperRight: 'PaleGreen',
-                backgroundColorLowerRight: 'Gold',
+                backgroundColorLowerRight: 'LemonChiffon'
             },
             plugins: {
-                legend: {
-                    display: false
-                },
                 datasource: {
                     type: 'csv',
                     url: '2ndGradeGrowthVsAchievement.csv',
@@ -54,11 +59,19 @@
                     datasetLabels: true,
                     indexLabels: true,
                     datapointLabelMapping: {
-                        _dataset: 'ClassName',
+                        _dataset: 'StudentLastName',
                         _index: 'EndPercentile',
                         x: 'EndPercentile',
                         y: 'ConditionalGrowthPercentile',
                     },
+                }
+            },
+            legend: {
+                labels: {
+                    filter: function(item, chart) {
+                        return!item.text.includes('Dataset 3')
+                    },
+                    boxWidth: 4,
                 }
             },
             scales: {
@@ -87,7 +100,9 @@
                 max: 100
             }
         });
-        Chart.defaults.global.legend.display = false;
+        // Chart.defaults.global.legend.display = false;
+        Chart.defaults.global.legend.labels.usePointStyle = true;
+        Chart.defaults.global.defaultFontSize = 18;
         Chart.pluginService.register({
             beforeDraw: function (chart, easing) {
                 if (chart.config.options.chartArea && chart.config.options.chartArea.backgroundColorLowerLeft) {
@@ -96,6 +111,7 @@
                     const chartArea = chart.chartArea;
 
                     ctx.save();
+                    ctx.textAlign = "center";
                     // Lower left
                     ctx.fillStyle = chart.config.options.chartArea.backgroundColorLowerLeft;
                     ctx.fillRect(chartArea.left, chartArea.top + 0.5*(chartArea.bottom - chartArea.top),
@@ -112,6 +128,31 @@
                     ctx.fillStyle = chart.config.options.chartArea.backgroundColorLowerRight;
                     ctx.fillRect(chartArea.left + 0.5*(chartArea.right - chartArea.left), chartArea.top + 0.5*(chartArea.bottom - chartArea.top),
                         0.5*(chartArea.right - chartArea.left), 0.5*(chartArea.bottom - chartArea.top));
+                    // Lower left text
+                    ctx.fillStyle = 'LightCoral';
+                    ctx.fillText("Low Achievement", chartArea.left+0.25*(chartArea.right-chartArea.left),
+                        chartArea.bottom+0.40*(chartArea.top-chartArea.bottom));
+                    ctx.fillText("Low Growth", chartArea.left+0.25*(chartArea.right-chartArea.left),
+                        chartArea.bottom+0.35*(chartArea.top-chartArea.bottom));
+                    // Upper left text
+                    ctx.fillStyle = 'MediumPurple';
+                    ctx.fillText("Low Achievement", chartArea.left+0.25*(chartArea.right-chartArea.left),
+                        chartArea.bottom+0.90*(chartArea.top-chartArea.bottom));
+                    ctx.fillText("High Growth", chartArea.left+0.25*(chartArea.right-chartArea.left),
+                        chartArea.bottom+0.85*(chartArea.top-chartArea.bottom));
+                    // Upper right text
+                    ctx.fillStyle = 'MediumSeaGreen';
+                    ctx.fillText("High Achievement", chartArea.left+0.75*(chartArea.right-chartArea.left),
+                        chartArea.bottom+0.90*(chartArea.top-chartArea.bottom));
+                    ctx.fillText("High Growth", chartArea.left+0.75*(chartArea.right-chartArea.left),
+                        chartArea.bottom+0.85*(chartArea.top-chartArea.bottom));
+                    // Lower right text
+                    ctx.fillStyle = 'Gold';
+                    ctx.fillText("High Achievement", chartArea.left+0.75*(chartArea.right-chartArea.left),
+                        chartArea.bottom+0.40*(chartArea.top-chartArea.bottom));
+                    ctx.fillText("Low Growth", chartArea.left+0.75*(chartArea.right-chartArea.left),
+                        chartArea.bottom+0.35*(chartArea.top-chartArea.bottom));
+
                     ctx.restore();
                 }
             }
