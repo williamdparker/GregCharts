@@ -21,15 +21,17 @@
     const config = {
         type: 'scatter',
         data: {
-                    // labels:["Boys", "Girls"],
+                    labels:["Boy", "Girl"],
                     datasets: [{
-                            label: "Girls",
+                        id: 'Girl',
+                        label: "Girls",
                             pointBackgroundColor: 'red',
                             borderColor: 'red',
                             backgroundColor: 'red',
                             pointStyle: 'rectRot'
                     },
                         {
+                            id: 'Boy',
                             label: "Boys",
                             pointBackgroundColor: 'blue',
                             borderColor: 'blue',
@@ -58,6 +60,7 @@
                     rowMapping: 'datapoint',
                     datasetLabels: true,
                     indexLabels: true,
+                    datapointLabels: true,
                     datapointLabelMapping: {
                         _dataset: 'StudentLastName',
                         _index: 'EndPercentile',
@@ -87,6 +90,18 @@
                         scaleLabel: { display: true, labelString: 'Conditional Growth Percentile'}
                     }
                 ]
+            },
+            tooltips: {
+                callbacks: {
+                    label: function(tooltipItem) {
+                        let gender = 'Girl';
+                        if (tooltipItem.datasetIndex === 1) {
+                            gender = 'Boy';
+                        }
+                        const label = tooltipItem.index+1;  // Use start at one indexing
+                        return gender + ' #' + label;
+                    }
+                }
             }
         }
     };
